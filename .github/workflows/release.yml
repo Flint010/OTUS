@@ -17,8 +17,7 @@ jobs:
       - run: cmake . -DPATCH_VERSION=${{ github.run_number }}
       - run: cmake --build .
       - run: cmake --build . --target test
-      - run: cmake --build . --target package
-      - name: Install package
+      - run: cmake --build . --target package      
       - run: dpkg -c helloworld-0.0.${{ github.run_number }}-Linux.deb
       - run: ./test_version      
       - name: Create Release
