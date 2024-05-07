@@ -18,8 +18,10 @@ jobs:
       - run: cmake --build .
       - run: cmake --build . --target test
       - run: cmake --build . --target package      
-      - run: dpkg -c helloworld-0.0.${{ github.run_number }}-Linux.deb
-      - run: ./test_version      
+      - name: Install package
+        run: dpkg -c helloworld-0.0.${{ github.run_number }}-Linux.deb
+        run: ./helloworld_cli
+        run: ./test_version        
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
