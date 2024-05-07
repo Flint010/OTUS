@@ -38,3 +38,6 @@ jobs:
           asset_path: ./helloworld-0.0.${{ github.run_number }}-Linux.deb
           asset_name: helloworld-0.0.${{ github.run_number }}-Linux.deb
           asset_content_type: application/vnd.debian.binary-package
+      - name: Install deb packet 
+      - run: dpkg -c helloworld-0.0.${{ github.run_number }}-Linux.deb   
+      - run: ./test_version
