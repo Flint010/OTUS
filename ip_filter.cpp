@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <fstream>
 
 // ("",  '.') -> [""]
 // ("11", '.') -> ["11"]
@@ -32,18 +33,31 @@ std::vector<std::string> split(const std::string &str, char d)
 
 int main(int argc, char const *argv[])
 {
+    
     try
     {
         std::vector<std::vector<std::string> > ip_pool;
+        
+        std::ifstream fin;
+        fin.open("../ip_filter.tsv");
+        if (!fin.is_open()) {
+            throw std::logic_error("Can't open file ../../ip_filter.tsv");
+        }
+        auto old_buff = std::cin.rdbuf();
+        std::cin.rdbuf(fin.rdbuf());
 
         for(std::string line; std::getline(std::cin, line);)
         {
             std::vector<std::string> v = split(line, '\t');
             ip_pool.push_back(split(v.at(0), '.'));
         }
+        
+        fin.close();
+        std::cin.rdbuf(old_buff);
 
         // TODO reverse lexicographically sort
-		std::sort(ip_pool.begin(), ip_pool.end() [](const auto& v1, const auto& v2){
+        
+		std::sort(ip_pool.begin(), ip_pool.end(), [](const auto& v1, const auto& v2){
 			int v1_a;
 			int v1_b;			
 			for(auto i = 0; i < 4; i++) {
@@ -51,7 +65,7 @@ int main(int argc, char const *argv[])
 				v1_b = std::stoi(v2[i]);
 				if (v1_a > v1_b) {
 					return true;
-				} else if (v1_a > v1_b) {
+				} else if (v1_a < v1_b) {
 					return false;
 				}				
 			}
@@ -60,7 +74,7 @@ int main(int argc, char const *argv[])
 
         for(auto ip = ip_pool.cbegin(); ip != ip_pool.cend(); ++ip)
         {
-            for(std::vector<std::string>::const_iterator ip_part = ip->cbegin(); ip_part != ip->cend(); ++ip_part)
+            for(auto ip_part = ip->cbegin(); ip_part != ip->cend(); ++ip_part)
             {
                 if (ip_part != ip->cbegin())
                 {
@@ -85,7 +99,7 @@ int main(int argc, char const *argv[])
 		
 		for(auto ip = ip_pool.cbegin(); ip != ip_pool.cend(); ++ip)
         {	
-			if (ip[0] != "1") continue;
+			if ((*ip)[0] != "1") continue;
 			
             for(std::vector<std::string>::const_iterator ip_part = ip->cbegin(); ip_part != ip->cend(); ++ip_part)
             {
@@ -110,7 +124,7 @@ int main(int argc, char const *argv[])
 		
 		for(auto ip = ip_pool.cbegin(); ip != ip_pool.cend(); ++ip)
         {	
-			if (ip[0] != "46" && ip[1] != "70") continue;
+			if ((*ip)[0] != "46" || (*ip)[1] != "70") continue;
 			
             for(std::vector<std::string>::const_iterator ip_part = ip->cbegin(); ip_part != ip->cend(); ++ip_part)
             {
@@ -137,7 +151,7 @@ int main(int argc, char const *argv[])
         {	
 			int flg = 0;
 			for(int i = 0; i < 4; i++) {
-				if(ip[i] == "46") {
+				if((*ip)[i] == "46") {
 					flg = 1;
 				}
 			}
