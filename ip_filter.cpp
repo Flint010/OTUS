@@ -31,10 +31,8 @@ std::vector<std::string> split(const std::string &str, char d)
     return r;
 }
 
-int main(int argc, char const *argv[])
+int main([[maybe_unused]]int argc, [[maybe_unused]] char const *argv[])
 {
-    (void*)argc;
-    (void*)argv;
     try
     {
         std::vector<std::vector<std::string> > ip_pool;
@@ -42,7 +40,7 @@ int main(int argc, char const *argv[])
         std::ifstream fin;
         fin.open("../ip_filter.tsv");
         if (!fin.is_open()) {
-            throw std::logic_error("Can't open file ../../ip_filter.tsv");
+            throw std::logic_error("Can't open file ../ip_filter.tsv");
         }
         auto old_buff = std::cin.rdbuf();
         std::cin.rdbuf(fin.rdbuf());
