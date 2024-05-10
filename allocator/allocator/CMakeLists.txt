@@ -4,7 +4,7 @@
 cmake_minimum_required (VERSION 3.8)
 
 # Добавьте источник в исполняемый файл этого проекта.
-add_executable (allocator "allocator.cpp" "allocator.h")
+add_executable (allocator "mian.cpp" "allocator.h" "allocator.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET allocator PROPERTY CXX_STANDARD 20)
