@@ -13,6 +13,9 @@ class my_allocator
 public:
     using value_type = T;
 
+    template<typename U>
+    friend class my_allocator;
+
     template< class U >
     struct rebind
     {
@@ -33,7 +36,12 @@ public:
     my_allocator(const my_allocator& other) noexcept = default;
 
     template< class U >
-    my_allocator(const my_allocator<U>& other) noexcept {};
+    my_allocator(const my_allocator<U>& other) noexcept {
+        m_elements = other.m_elements;
+        m_reserved = other.m_reserved;
+        //m_mem = const_cast<T*>(other.m_mem);
+        //m_ptr = const_cast<T*>(other.m_ptr);
+    };
     
 
     T* allocate(std::size_t n) {
