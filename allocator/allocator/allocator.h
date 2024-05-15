@@ -4,7 +4,14 @@
 #include <cstdlib>
 #include <exception>
 
-template<typename T>
+
+template<size_t N_byte>
+struct Memory {
+    std::size_t m_reserved = 0;
+    char m_mem[N_byte] = { 0 };
+};
+
+template<typename T, size_t N>
 class my_allocator
 {
     static_assert(!std::is_same_v<T, void>, "Type of the allocator can't be void");
@@ -13,51 +20,59 @@ class my_allocator
 public:
     using value_type = T;
 
-    template<typename U>
+    template<typename U, size_t N>
     friend class my_allocator;
 
     template< class U >
     struct rebind
     {
-        typedef my_allocator<U> other;
+        typedef my_allocator<U, N> other;
     };
 
 public:
 
-	explicit my_allocator(std::size_t N = 10) : m_elements(N), m_reserved(0){
-         m_mem = static_cast<T*>(std::malloc(N * sizeof(value_type)));
-         m_ptr = m_mem;
+    explicit my_allocator(): m_memory(new Memory<sizeof(value_type) * N>){
+        
     };
 
     ~my_allocator() {
-        std::free(m_mem);
+        delete m_memory;
+        m_memory = nullptr;
     }
 
-    my_allocator(const my_allocator& other) noexcept = default;
+    my_allocator(const my_allocator& other) noexcept
+        : m_memory(other.m_memory) {}
 
-    template< class U >
-    my_allocator(const my_allocator<U>& other) noexcept {
-        m_elements = other.m_elements;
-        m_reserved = other.m_reserved;
-        //m_mem = const_cast<T*>(other.m_mem);
-        //m_ptr = const_cast<T*>(other.m_ptr);
-    };
-    
+    template< typename U >
+    my_allocator( my_allocator<U, N>& other) noexcept 
+       {}
 
-    T* allocate(std::size_t n) {
-        if (n + m_reserved > m_elements) {  // if the number of allocated elements is greater, then free space
-            std::bad_alloc();
+    value_type* allocate(std::size_t n) {
+        if (m_memory == nullptr) {
+            m_memory = new Memory<sizeof(value_type) * N>;
         }
-        m_reserved += n;
 
-        T* return_ptr = m_ptr;
-        m_ptr += n;
+        //if (m_reserved == 0) {
+        //    //reserved();
+        //}
+
+        if (n + m_memory->m_reserved > N) {  // if the number of allocated elements is greater, then free space
+           throw std::bad_alloc();
+        }
+
+        //m_reserved += n;
+
+        //T* return_ptr = m_ptr;
+        //m_ptr += n;
+        
+        value_type* return_ptr = reinterpret_cast<value_type*>(&(m_memory->m_mem[m_memory->m_reserved]));
+        m_memory->m_reserved += n;
 
         return return_ptr;
     }
 
     void deallocate(T* ptr, std::size_t n) {
-
+        
     }
 
     template<typename U, typename... Args>
@@ -66,8 +81,8 @@ public:
         new (reinterpret_cast<void*>(ptr)) U{ std::forward<Args>(args)... };
     }
 
-    void destroy(T* p) {
-        p->~T();
+    void my_deallocate() {
+        delete m_memory;
     }
 
     template<typename U>
@@ -77,10 +92,5 @@ public:
     }
 
 private:
-    std::size_t m_elements;
-    std::size_t m_reserved;
-
-    T* m_mem;
-    T* m_ptr;
+    Memory<sizeof(value_type)*N>* m_memory = nullptr;
 };
-
