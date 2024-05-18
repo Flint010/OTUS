@@ -15,7 +15,8 @@ jobs:
           submodules: true
 #      - run: sudo apt-get update && sudo apt-get install libboost-test-dev -y
       - run: cd Metaprogramming/  
-      - run: cmake . -DPATCH_VERSION=${{ github.run_number }}
+      - run: ls
+#      - run: cmake . -DPATCH_VERSION=${{ github.run_number }}
       - run: cmake --build .
       - run: ls
       - run: cd Metaprogramming/
