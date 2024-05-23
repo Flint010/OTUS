@@ -3,7 +3,7 @@ name: 'C++ CI'
 on:
   push:
     branches:
-      - ex7
+      - ex31
       - feature/github_actions
 
 jobs:
@@ -14,15 +14,9 @@ jobs:
         with:
           submodules: true
 #      - run: sudo apt-get update && sudo apt-get install libboost-test-dev -y
-      - run: cd "/Metaprogramming"  
-      - run: ls
 #      - run: cmake . -DPATCH_VERSION=${{ github.run_number }}
       - run: cmake --build .
-      - run: ls
-      - run: cd "/Metaprogramming"
-      - run: ls
  #     - run: cmake --build . --target test
-      - run: ./Metaprogramming
 #      - run: cmake --build . --target package      
 # #     - run: dpkg -c ip_filter-0.0.${{ github.run_number }}-Linux.deb      
 #      - name: Create Release
